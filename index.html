@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>FusionSlab Card Viewer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 20px auto;
+      line-height: 1.6;
+      background-color: #0a1e42; /* Match FusionSlab website blue */
+      color: #ffffff;
+    }
+    h1, h2 {
+      text-align: center;
+      color: #ffffff;
+    }
+    .section {
+      border: 1px solid #1a2f5b;  /* slightly lighter blue border */
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 20px;
+      background-color: #0a2b5b;   /* slightly lighter than body */
+    }
+    .section img {
+      max-width: 100%;
+      display: block;
+      margin: 10px auto;
+      border: 2px solid #1a2f5b;
+      border-radius: 5px;
+    }
+    .label { 
+      font-weight: bold; 
+      width: 150px; 
+      display: inline-block; 
+    }
+    .value { 
+      display: inline-block; 
+    }
+  </style>
+</head>
+<body>
+  <h1>FusionSlab Card Viewer</h1>
+
+  <div class="section">
+    <div><span class="label">Certification #</span><span class="value" id="cert"></span></div>
+    <div><span class="label">Grade:</span><span class="value" id="grade"></span></div>
+    <div><span class="label">Status:</span><span class="value" id="status"></span></div>
+    <div><span class="label">Owner Full Name:</span><span class="value" id="owner"></span></div>
+  </div>
+
+  <div class="section">
+    <h2>Card Information</h2>
+    <div><span class="label">Pokemon:</span><span class="value" id="pokemon"></span></div>
+    <div><span class="label">Variant:</span><span class="value" id="variant"></span></div>
+    <div><span class="label">Year:</span><span class="value" id="year"></span></div>
+    <div><span class="label">Set:</span><span class="value" id="set"></span></div>
+    <div><span class="label">Notation:</span><span class="value" id="notation"></span></div>
+    <div><span class="label">Declared value:</span><span class="value" id="value"></span></div>
+  </div>
+
+  <div class="section">
+    <h2>Images</h2>
+    <img id="front" src="" alt="Card Front">
+    <img id="back" src="" alt="Card Back">
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js"></script>
+  <script>
+    // Initialize Firebase
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT.firebaseapp.com",
+      databaseURL: "https://YOUR_PROJECT.firebaseio.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT.appspot.com",
+      messagingSenderId: "SENDER_ID",
+      appId: "APP_ID"
+    };
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // Get cert from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const cert = urlParams.get('cert');
+
+    // Fetch card data
+    db.ref('cards/' + cert).get().then(snapshot => {
+      if(snapshot.exists()){
+        const card = snapshot.val();
+        document.getElementById('cert').innerText = card.cert;
+        document.getElementById('grade').innerText = card.grade;
+        document.getElementById('status').innerText = card.status;
+        document.getElementById('owner').innerText = card.owner.fullName;
+
+        const info = card.cardInfo;
+        document.getElementById('pokemon').innerText = info.pokemon;
+        document.getElementById('variant').innerText = info.variant;
+        document.getElementById('year').innerText = info.year;
+        document.getElementById('set').innerText = info.set;
+        document.getElementById('notation').innerText = info.notation;
+        document.getElementById('value').innerText = `$${info.declaredValue}`;
+
+        const images = card.images;
+        document.getElementById('front').src = images.front;
+        document.getElementById('back').src = images.back;
+      } else {
+        alert('Card not found!');
+      }
+    });
+  </script>
+</body>
+</html>
