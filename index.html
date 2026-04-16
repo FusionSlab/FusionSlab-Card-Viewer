@@ -229,9 +229,6 @@ window.verifyCert = async function () {
                 Status: ${data.status || "N/A"}
             </div>`;
 
-            // ❌ OWNER SECTION REMOVED HERE
-
-            output += `<h3>Card Information</h3>`;
             const fields = ["pokemon", "set", "year", "finish", "notation", "declared_value"];
 
             fields.forEach(f => {
