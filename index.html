@@ -1,17 +1,40 @@
 <!DOCTYPE html>
+<html>
 <html lang="en">
 <head>
+  <title>FusionSlab Card Viewer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 20px auto;
+      line-height: 1.6;
+      background-color: #0a1e42; /* Match FusionSlab website blue */
+      color: #ffffff;
+    }
+    h1, h2 {
+      text-align: center;
+      color: #ffffff;
+    }
+    .section {
+      border: 1px solid #1a2f5b;  /* slightly lighter blue border */
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 20px;
+      background-color: #0a2b5b;   /* slightly lighter than body */
+    }
+    .section img {
+      max-width: 100%;
+      display: block;
+      margin: 10px auto;
+      border: 2px solid #1a2f5b;
+      border-radius: 5px;
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FusionSlab</title>
+<title>FusionSlab Card Verification</title>
 
-<!-- Favicon -->
 <link rel="icon" type="image/png" sizes="32x32" href="web-app-manifest-512x512.png">
-
-<!-- Apple Home Screen Icon -->
 <link rel="apple-touch-icon" sizes="512x512" href="web-app-manifest-512x512.png">
-
-<!-- Web App Manifest -->
 <link rel="manifest" href="manifest.json">
 
 <link href="https://fonts.googleapis.com/css2?family=Lobster&display=swap" rel="stylesheet">
@@ -25,36 +48,26 @@ body {
     text-align: center;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     min-height: 100vh;
     padding: 20px;
-    animation: fadeIn 1.2s ease-in-out;
 }
-
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
 .logo {
     width: 700px;
     max-width: 90%;
     margin: 20px 0 10px 0;
 }
-
 .tagline {
     font-family: 'Lobster', cursive;
     font-size: 2rem;
     margin-bottom: 40px;
 }
-
 .search-container {
     width: 90%;
     max-width: 500px;
     margin-bottom: 20px;
 }
-
 input {
     width: 100%;
     padding: 15px;
@@ -62,7 +75,6 @@ input {
     border: none;
     font-size: 16px;
 }
-
 button {
     padding: 15px 40px;
     border-radius: 8px;
@@ -75,58 +87,28 @@ button {
     transition: 0.3s ease;
     margin: 10px;
 }
-
-button:hover {
-    background-color: #00a2d8;
-}
+button:hover { background-color: #00a2d8; }
 
 .result-card {
     margin-top: 30px;
     padding: 25px;
-    background: none;
+    background: rgba(0,0,0,0.4);
     border-radius: 12px;
     max-width: 700px;
     width: 90%;
     display: none;
     text-align: left;
 }
-
-.result-card h2, .result-card h3 {
-    text-align: center;
-    margin: 10px 0;
-}
-
-.result-card img {
-    max-width: 100%;
-    border-radius: 8px;
-    margin: 10px 0;
-}
-
-.images-row {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    flex-wrap: nowrap;
-}
-
-.images-row img {
-    max-width: 48%;
-}
-
-.not-found {
-    color: #ff6b6b;
-    font-weight: bold;
-    text-align: center;
-}
-
-.verified {
-    color: #4dff88;
-    font-weight: bold;
-    text-align: center;
-}
+.result-card h2, .result-card h3 { text-align: center; margin: 10px 0; }
+.result-card img { max-width: 100%; border-radius: 8px; margin: 10px 0; }
+.images-row { display: flex; justify-content: center; gap: 10px; flex-wrap: nowrap; }
+.images-row img { max-width: 48%; }
+.not-found { color: #ff6b6b; font-weight: bold; text-align: center; }
+.verified { color: #4dff88; font-weight: bold; text-align: center; }
+.subgrades { text-align:center; margin:10px 0; }
+.subgrades span { display:inline-block; margin:0 8px; font-weight:bold; }
 </style>
 </head>
-
 <body>
 
 <img src="FusionSlab.png" alt="FusionSlab Logo" class="logo">
@@ -135,9 +117,7 @@ button:hover {
 <div class="search-container">
     <input type="text" id="certSearch" placeholder="Enter Certification Number">
 </div>
-
 <button onclick="verifyCert()">Verify</button>
-<button onclick="goToSubmit()">Submit</button>
 
 <div id="resultCard" class="result-card"></div>
 
@@ -171,9 +151,13 @@ function getPSALabel(grade) {
         case "3": return "VERY GOOD";
         case "2": return "GOOD";
         case "1": return "POOR";
-        case "ALT": return "ALT";
+        case "Alt": return "ALTERED";  // <-- updated to show Altered
         default: return "N/A";
     }
+    .label { 
+      font-weight: bold; 
+      width: 150px; 
+      display: inline-block; 
 }
 
 window.verifyCert = async function () {
@@ -186,6 +170,8 @@ window.verifyCert = async function () {
         resultCard.innerHTML = "<p class='not-found'>Please enter a certification number.</p>";
         return;
     }
+    .value { 
+      display: inline-block; 
 
     try {
         const certRef = ref(database, certInput);
@@ -195,6 +181,7 @@ window.verifyCert = async function () {
             const data = snapshot.val();
             let output = `<h2 class='verified'>Certification # ${certInput}</h2>`;
 
+            // Images
             if (data.image1 || data.image2) {
                 output += `<div class="images-row">`;
                 if (data.image1) output += `<img src="${data.image1}">`;
@@ -202,6 +189,7 @@ window.verifyCert = async function () {
                 output += `</div>`;
             }
 
+            // Grade
             if (data.grade) {
                 const label = getPSALabel(data.grade);
                 const gradeColor = (data.grade === "Alt") ? "#ff4d4d" : "#4dff88";
@@ -210,27 +198,31 @@ window.verifyCert = async function () {
                 </h2>`;
             }
 
+            // Subgrades
             if (data.subgrades) {
-                output += `<div style="text-align:center; margin:10px 0;">
-                    <strong>Subgrades:</strong><br>
-                    Centering: ${data.subgrades.centering || "N/A"} |
-                    Edges: ${data.subgrades.edges || "N/A"} |
-                    Surface: ${data.subgrades.surface || "N/A"} |
-                    Corners: ${data.subgrades.corners || "N/A"}
+                output += `<div class="subgrades">
+                    <span>Centering: ${data.subgrades.centering || "N/A"}</span>
+                    <span>Edges: ${data.subgrades.edges || "N/A"}</span>
+                    <span>Surface: ${data.subgrades.surface || "N/A"}</span>
+                    <span>Corners: ${data.subgrades.corners || "N/A"}</span>
                 </div>`;
             }
 
+            // Status
             let statusColor = "#4dff88"; 
             if (!data.status || data.status.toLowerCase() === "inactive" || data.status.toLowerCase() === "revoked") {
                 statusColor = "#ff4d4d";
             }
-
             output += `<div style="text-align:center; font-weight:bold; margin:10px 0; color:${statusColor};">
                 Status: ${data.status || "N/A"}
             </div>`;
 
-            const fields = ["pokemon", "set", "year", "finish", "notation", "declared_value"];
+            // Owner
+            output += `<h3>Owner</h3><p><strong>Full Name:</strong> ${data.owner || "N/A"}</p>`;
 
+            // Card info
+            output += `<h3>Card Information</h3>`;
+            const fields = ["pokemon", "variant", "year", "set", "notation", "declared_value"];
             fields.forEach(f => {
                 output += `<p><strong>${f.charAt(0).toUpperCase() + f.slice(1).replace("_"," ")}:</strong> ${data[f] || "N/A"}</p>`;
             });
@@ -243,11 +235,88 @@ window.verifyCert = async function () {
         resultCard.innerHTML = "<h2 class='not-found'>Database Connection Error</h2>";
         console.error(error);
     }
+  </style>
+</head>
+<body>
+  <h1>FusionSlab Card Viewer</h1>
+
+  <div class="section">
+    <div><span class="label">Certification #</span><span class="value" id="cert"></span></div>
+    <div><span class="label">Grade:</span><span class="value" id="grade"></span></div>
+    <div><span class="label">Status:</span><span class="value" id="status"></span></div>
+    <div><span class="label">Owner Full Name:</span><span class="value" id="owner"></span></div>
+  </div>
+
+  <div class="section">
+    <h2>Card Information</h2>
+    <div><span class="label">Pokemon:</span><span class="value" id="pokemon"></span></div>
+    <div><span class="label">Variant:</span><span class="value" id="variant"></span></div>
+    <div><span class="label">Year:</span><span class="value" id="year"></span></div>
+    <div><span class="label">Set:</span><span class="value" id="set"></span></div>
+    <div><span class="label">Notation:</span><span class="value" id="notation"></span></div>
+    <div><span class="label">Declared value:</span><span class="value" id="value"></span></div>
+  </div>
+
+  <div class="section">
+    <h2>Images</h2>
+    <img id="front" src="" alt="Card Front">
+    <img id="back" src="" alt="Card Back">
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js"></script>
+  <script>
+    // Initialize Firebase
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT.firebaseapp.com",
+      databaseURL: "https://YOUR_PROJECT.firebaseio.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT.appspot.com",
+      messagingSenderId: "SENDER_ID",
+      appId: "APP_ID"
+    };
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // Get cert from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const cert = urlParams.get('cert');
+
+    // Fetch card data
+    db.ref('cards/' + cert).get().then(snapshot => {
+      if(snapshot.exists()){
+        const card = snapshot.val();
+        document.getElementById('cert').innerText = card.cert;
+        document.getElementById('grade').innerText = card.grade;
+        document.getElementById('status').innerText = card.status;
+        document.getElementById('owner').innerText = card.owner.fullName;
+
+        const info = card.cardInfo;
+        document.getElementById('pokemon').innerText = info.pokemon;
+        document.getElementById('variant').innerText = info.variant;
+        document.getElementById('year').innerText = info.year;
+        document.getElementById('set').innerText = info.set;
+        document.getElementById('notation').innerText = info.notation;
+        document.getElementById('value').innerText = `$${info.declaredValue}`;
+
+        const images = card.images;
+        document.getElementById('front').src = images.front;
+        document.getElementById('back').src = images.back;
+      } else {
+        alert('Card not found!');
+      }
+    });
+  </script>
 };
 
-window.goToSubmit = function () {
-    window.location.href = "https://fusionslab.github.io/FusionSlab-Submission-Center/";
-};
+// Automatically verify if QR code URL has ?cert=XXXXX
+const urlParams = new URLSearchParams(window.location.search);
+const certFromURL = urlParams.get('cert');
+if(certFromURL) {
+    document.getElementById("certSearch").value = certFromURL;
+    verifyCert();
+}
 </script>
 
 </body>
