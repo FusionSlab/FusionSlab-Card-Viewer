@@ -3,6 +3,8 @@
 <head>
   <title>FusionSlab Submission Center</title>
 
+  <link rel="icon" type="image/png" href="web-app-manifest-512x512.png">
+
   <style>
     body {
       margin: 0;
@@ -1038,7 +1040,7 @@ function completeOrder() {
     })
     .catch((err) => {
       console.error("EMAIL ERROR:", err);
-      alert("Email failed to send. Check console.");
+      alert("Email failed to send. Failed To Send Submission.");
     });
 }
   
